@@ -1,0 +1,25 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const content = element.content || '';
+const language = element.language || '';
+---
+
+<div class="code-block my-6">
+  <pre class="bg-gray-800 text-white p-4 rounded overflow-x-auto">
+    <code class={language ? `language-${language}` : ''}>
+      {content}
+    </code>
+  </pre>
+  
+  {language && (
+    <div class="text-xs text-gray-500 mt-1">
+      Language: {language}
+    </div>
+  )}
+</div>

@@ -1,0 +1,81 @@
+---
+import type { ArcContentElement } from "../../services/articleService";
+
+// Import all content block components
+import TextBlock from "./TextBlock.astro";
+import VideoBlock from "./VideoBlock.astro";
+import ImageBlock from "./ImageBlock.astro";
+import CustomEmbedBlock from "./CustomEmbedBlock.astro";
+import HeaderBlock from "./HeaderBlock.astro";
+import ListBlock from "./ListBlock.astro";
+import BlockquoteBlock from "./BlockquoteBlock.astro";
+import RawHtmlBlock from "./RawHtmlBlock.astro";
+import DividerBlock from "./DividerBlock.astro";
+import TableBlock from "./TableBlock.astro";
+import InterstitialLinkBlock from "./InterstitialLinkBlock.astro";
+import SocialEmbedBlock from "./SocialEmbedBlock.astro";
+import CodeBlock from "./CodeBlock.astro";
+import QuoteBlock from "./QuoteBlock.astro";
+import CorrectionBlock from "./CorrectionBlock.astro";
+import GalleryBlock from "./GalleryBlock.astro";
+import PullquoteBlock from "./PullquoteBlock.astro";
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+---
+
+{
+  (() => {
+    switch (element.type) {
+      case "text":
+        return <TextBlock element={element} />;
+      case "video":
+        return <VideoBlock element={element} />;
+      case "image":
+        return <ImageBlock element={element} />;
+      case "custom_embed":
+        return <CustomEmbedBlock element={element} />;
+      case "header":
+        return <HeaderBlock element={element} />;
+      case "list":
+        return <ListBlock element={element} />;
+      case "blockquote":
+        return <BlockquoteBlock element={element} />;
+      case "raw_html":
+        return <RawHtmlBlock element={element} />;
+      case "divider":
+      case "hr":
+        return <DividerBlock element={element} />;
+      case "table":
+        return <TableBlock element={element} />;
+      case "interstitial_link":
+        return <InterstitialLinkBlock element={element} />;
+      case "oembed_response":
+      case "social_embed":
+        return <SocialEmbedBlock element={element} />;
+      case "code":
+        return <CodeBlock element={element} />;
+      case "quote":
+        return <QuoteBlock element={element} />;
+      case "correction":
+        return <CorrectionBlock element={element} />;
+      case "gallery":
+      case "slideshow":
+        return <GalleryBlock element={element} />;
+      case "pullquote":
+        return <PullquoteBlock element={element} />;
+      default:
+        // Log unsupported types during development
+        console.log(`Unsupported content type: ${element.type}`);
+        console.log(element);
+        return (
+          <div class="text-gray-500 italic">
+            Unsupported content type: {element.type}
+          </div>
+        );
+    }
+  })()
+}

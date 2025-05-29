@@ -1,0 +1,22 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const items = element.items || [];
+const list_type = element.list_type || 'unordered';
+
+// Determine if it's an ordered or unordered list
+const ListTag = list_type === 'ordered' ? 'ol' : 'ul';
+---
+
+<div class="list-block mb-6">
+  <ListTag class={list_type === 'ordered' ? 'list-decimal' : 'list-disc'}>
+    {items.map((item: string) => (
+      <li class="ml-5 mb-2" set:html={item} />
+    ))}
+  </ListTag>
+</div>

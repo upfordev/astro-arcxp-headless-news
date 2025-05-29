@@ -1,0 +1,23 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+---
+
+<div class="video-block mb-8">
+  {element.embed?.config?.videoCode && (
+    <div class="video-container aspect-video">
+      <Fragment set:html={element.embed.config.videoCode} />
+    </div>
+  )}
+  
+  {element.embed?.config?.caption && (
+    <div class="text-sm text-gray-500 mt-2 italic">
+      {element.embed.config.caption}
+    </div>
+  )}
+</div>

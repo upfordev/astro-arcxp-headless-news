@@ -1,0 +1,18 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const content = element.content || element.text || '';
+const correction_type = element.correction_type || 'correction';
+---
+
+<div class="correction-block my-6 p-4 bg-amber-50 border border-amber-200 rounded">
+  <div class="font-bold uppercase text-sm text-amber-800 mb-1">
+    {correction_type.charAt(0).toUpperCase() + correction_type.slice(1)}
+  </div>
+  <div class="text-sm" set:html={content} />
+</div>

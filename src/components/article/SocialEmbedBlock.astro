@@ -1,0 +1,33 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const html = element.raw_oembed?.html || element.html || '';
+const source_type = element.subtype || element.source_type || '';
+---
+
+<div class="social-embed-block my-6">
+  <div class="social-embed-container">
+    <Fragment set:html={html} />
+  </div>
+  
+  {source_type && (
+    <div class="text-xs text-gray-500 mt-1 text-right">
+      Source: {source_type.charAt(0).toUpperCase() + source_type.slice(1)}
+    </div>
+  )}
+</div>
+
+<style>
+  .social-embed-container {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 100%;
+    overflow: hidden;
+  }
+</style>

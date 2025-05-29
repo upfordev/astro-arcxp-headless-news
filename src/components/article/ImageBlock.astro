@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+
+// Get image URL from the element
+const imageUrl = element.additional_properties?.url || '';
+const caption = element.additional_properties?.caption || '';
+const alt = element.additional_properties?.alt_text || caption || 'Article image';
+---
+
+<div class="image-block mb-8">
+  {imageUrl && (
+    <div>
+      <Image 
+        src={imageUrl} 
+        alt={alt}
+        width={800}
+        height={450}
+        format="webp"
+        quality={80}
+        class="w-full rounded-lg"
+      />
+      {caption && (
+        <div class="text-sm text-gray-500 mt-2 italic">
+          {caption}
+        </div>
+      )}
+    </div>
+  )}
+</div>

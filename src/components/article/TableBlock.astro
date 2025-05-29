@@ -1,0 +1,27 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const rows = element.rows || [];
+const header = element.header || false;
+---
+
+<div class="table-block my-6 overflow-x-auto">
+  <table class="min-w-full border-collapse border border-gray-300">
+    {rows.map((row: string[], rowIndex: number) => (
+      <tr class={rowIndex === 0 && header ? 'bg-gray-100' : 'bg-white'}>
+        {row.map((cell: string, cellIndex: number) => {
+          if (rowIndex === 0 && header) {
+            return <th class="border border-gray-300 px-4 py-2 text-left" set:html={cell} />;
+          } else {
+            return <td class="border border-gray-300 px-4 py-2" set:html={cell} />;
+          }
+        })}
+      </tr>
+    ))}
+  </table>
+</div>

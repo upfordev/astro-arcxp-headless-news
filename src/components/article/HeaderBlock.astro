@@ -1,0 +1,18 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const content = element.content || '';
+const level = element.level || 2;
+
+// Map level to appropriate heading tag
+const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements;
+---
+
+<div class="header-block mb-4">
+  <HeadingTag class="font-bold" set:html={content} />
+</div>

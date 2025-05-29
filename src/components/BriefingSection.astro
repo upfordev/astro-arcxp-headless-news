@@ -1,0 +1,130 @@
+---
+import { Image } from 'astro:assets';
+
+// Define the interface for article props
+interface Author {
+  name: string;
+  avatar: string;
+  slug?: string;
+}
+
+interface Article {
+  id: number | string;
+  title: string;
+  excerpt?: string;
+  imageUrl: string;
+  category: string;
+  url: string;
+  author?: Author;
+}
+
+interface Props {
+  articles: Article[];
+}
+
+const { articles } = Astro.props;
+
+// Helper function to get author name
+const getAuthorName = (author: Author | undefined): string => {
+  return author?.name || '';
+};
+
+// Helper function to get author avatar
+const getAuthorAvatar = (author: Author | undefined): string => {
+  return author?.avatar || 'https://randomuser.me/api/portraits/lego/1.jpg';
+};
+
+---
+
+<section class="py-8">
+  <h2 class="text-3xl font-bold mb-6 inline-block border-b-4 border-primary pb-2">BRIEFING</h2>
+  
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Left column: large article -->
+    <div class="md:col-span-1 row-span-2">
+      <div class="rounded-lg overflow-hidden border border-gray-200 shadow-sm h-full">
+        <a href={articles[0].url} class="block h-full">
+          <div class="relative h-64 md:h-80">
+            <Image 
+              src={articles[0].imageUrl} 
+              alt={articles[0].title}
+              width={1000}
+              height={800}
+              format="webp"
+              quality={80}
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute top-0 left-0 bg-green-400 text-white text-xs font-bold px-2 py-1 m-2 rounded-sm">
+              8
+            </div>
+          </div>
+          <div class="p-4">
+            <span class="text-xs font-semibold text-primary">{articles[0].category}</span>
+            <h3 class="text-lg font-bold leading-snug mb-2">{articles[0].title}</h3>
+            <p class="text-sm text-gray-600">{articles[0].excerpt}</p>
+            {articles[0].author && (
+              <div class="flex items-center mt-3">
+                <Image
+                  src={getAuthorAvatar(articles[0].author)}
+                  alt={getAuthorName(articles[0].author)}
+                  width={48}
+                  height={48}
+                  format="webp"
+                  quality={80}
+                  class="w-6 h-6 rounded-full mr-2"
+                />
+                <span class="text-sm text-gray-600">{getAuthorName(articles[0].author)}</span>
+              </div>
+            )}
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Middle and right columns: 2x2 grid of articles -->
+    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+      {articles.slice(1).map((article, index) => (
+        <div class="rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+          <a href={article.url} class="block">
+            <div class="relative h-40">
+              <Image 
+                src={article.imageUrl} 
+                alt={article.title}
+                width={600}
+                height={400}
+                format="webp"
+                quality={80}
+                class="w-full h-full object-cover"
+              />
+              <div class="absolute top-0 left-0 bg-green-400 text-white text-xs font-bold px-2 py-1 m-2 rounded-sm">
+                {index + 9}
+              </div>
+            </div>
+            <div class="p-3">
+              <span class="text-xs font-semibold text-primary">{article.category}</span>
+              <h3 class="text-sm font-bold leading-snug mb-2">{article.title}</h3>
+              {article.author && (
+                <div class="flex items-center mt-1">
+                  <Image
+                    src={getAuthorAvatar(article.author)}
+                    alt={getAuthorName(article.author)}
+                    width={48}
+                    height={48}
+                    format="webp"
+                    quality={80}
+                    class="w-4 h-4 rounded-full mr-1"
+                  />
+                  <span class="text-xs text-gray-500">{getAuthorName(article.author)}</span>
+                </div>
+              )}
+            </div>
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="text-center mt-6">
+    <a href="/briefings" class="text-sm font-medium text-primary hover:underline">See all briefings</a>
+  </div>
+</section>

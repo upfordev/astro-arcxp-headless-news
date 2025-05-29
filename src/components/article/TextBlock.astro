@@ -1,0 +1,14 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const content = element.content || '';
+---
+
+<div class="text-block mb-6">
+  <Fragment set:html={content} />
+</div>

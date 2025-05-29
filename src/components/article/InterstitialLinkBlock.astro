@@ -1,0 +1,17 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const content = element.content || '';
+const url = element.url || '#';
+---
+
+<div class="interstitial-link-block my-6 p-4 bg-gray-50 border-l-4 border-primary rounded">
+  <a href={url} class="text-primary font-medium hover:underline">
+    <span set:html={content} />
+  </a>
+</div>

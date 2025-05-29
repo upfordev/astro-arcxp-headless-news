@@ -1,0 +1,54 @@
+---
+// Mark this route as dynamic (not pre-rendered)
+export const prerender = false;
+
+import Layout from "../../layouts/Layout.astro";
+import ArticlePage from "../../components/ArticlePage.astro";
+import { getArticleByUrl } from "../../services/articleService";
+
+// Get the slug from the URL params
+const { slug } = Astro.params;
+
+// Ensure slug is a string (TypeScript safety)
+const slugStr = slug || '';
+
+// Check if the slug looks like a system file or non-article path
+// This prevents requests for files like robots.txt, favicon.ico, etc. from hitting the ARC API
+const isSystemFile = /\.(txt|xml|ico|json|js|css|map|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|eot)$/i.test(slugStr) || 
+                  /^(robots|sitemap|manifest|favicon|service-worker|sw)$/i.test(slugStr);
+
+// List of reserved paths that shouldn't be treated as articles
+const reservedPaths = ['api', 'assets', '_astro', 'images', 'fonts', 'css', 'js'];
+const isReservedPath = reservedPaths.some(path => slugStr.startsWith(path + '/') || slugStr === path);
+
+let article = null;
+
+// If this is a system file or reserved path, return a 404 response
+if (isSystemFile || isReservedPath) {
+  return new Response('Not found', {
+    status: 404,
+    statusText: 'Not Found'
+  });
+}
+
+// Convert the slug to a URL path format for the API
+const urlPath = `/${slugStr}/`;
+
+// Fetch the article data
+article = await getArticleByUrl(urlPath);
+
+// If no article was found, also return a 404
+if (!article) {
+  return new Response('Article not found', {
+    status: 404,
+    statusText: 'Not Found'
+  });
+}
+
+// Get the article title for the page title
+const pageTitle = article?.headlines?.basic || "Article";
+---
+
+<Layout title={pageTitle}>
+  <ArticlePage article={article} />
+</Layout>

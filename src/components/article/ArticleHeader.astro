@@ -1,0 +1,86 @@
+---
+import { Image } from 'astro:assets';
+import type { ArcArticle } from '../../services/articleService';
+import { formatDate } from '../../utils/dateUtils';
+
+interface Props {
+  article: ArcArticle;
+}
+
+const { article } = Astro.props;
+
+// Helper function to get author name
+const getAuthorName = (article: ArcArticle): string => {
+  return article.credits?.by?.[0]?.name || '';
+};
+
+// Helper function to get author avatar
+const getAuthorAvatar = (article: ArcArticle): string => {
+  return article.credits?.by?.[0]?.image?.url || 'https://randomuser.me/api/portraits/lego/1.jpg';
+};
+
+// Format the publish date
+const publishDate = article.display_date || article.publish_date || article.first_publish_date || '';
+const formattedDate = formatDate(publishDate);
+
+// Get the rubric text if available
+const rubricText = article.label?.rubric?.text || '';
+const showRubric = article.label?.rubric?.display !== false && rubricText;
+---
+
+<header class="article-header mb-8">
+  {showRubric && (
+    <div class="rubric text-primary font-bold uppercase text-sm mb-2">
+      {rubricText}
+    </div>
+  )}
+  
+  <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-4">
+    {article.headlines?.basic || ''}
+  </h1>
+  
+  {article.subheadlines?.basic && (
+    <h2 class="text-xl text-gray-700 mb-6 font-normal leading-relaxed">
+      {article.subheadlines.basic}
+    </h2>
+  )}
+  
+  <div class="flex items-center mb-6">
+    {article.credits?.by?.[0] && (
+      <div class="flex items-center">
+        <Image 
+          src={getAuthorAvatar(article)} 
+          alt={getAuthorName(article)}
+          width={48}
+          height={48}
+          format="webp"
+          quality={80}
+          class="w-10 h-10 rounded-full mr-3"
+        />
+        <div>
+          <div class="font-semibold">{getAuthorName(article)}</div>
+          <div class="text-sm text-gray-500">{formattedDate}</div>
+        </div>
+      </div>
+    )}
+  </div>
+  
+  {article.promo_items?.basic?.url && (
+    <div class="featured-image mb-6">
+      <Image 
+        src={article.promo_items.basic.url} 
+        alt={article.headlines?.basic || ''}
+        width={1200}
+        height={675}
+        format="webp"
+        quality={90}
+        class="w-full rounded-lg"
+      />
+      {article.promo_items.basic.caption && (
+        <div class="text-sm text-gray-500 mt-2 italic">
+          {article.promo_items.basic.caption}
+        </div>
+      )}
+    </div>
+  )}
+</header>

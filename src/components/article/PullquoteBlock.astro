@@ -1,0 +1,21 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const content = element.content || '';
+const citation = element.citation?.content || '';
+---
+
+<div class="pullquote-block my-8 px-8 py-6 border-l-4 border-r-4 border-primary">
+  <div class="text-2xl font-serif italic text-center" set:html={content} />
+  
+  {citation && (
+    <div class="text-sm text-gray-600 text-center mt-4">
+      — <span set:html={citation} />
+    </div>
+  )}
+</div>

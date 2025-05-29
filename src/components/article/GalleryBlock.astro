@@ -1,0 +1,43 @@
+---
+import { Image } from 'astro:assets';
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const content_elements = element.content_elements || [];
+const title = element.headlines?.basic || element.title || '';
+---
+
+<div class="gallery-block my-8">
+  {title && (
+    <h3 class="text-xl font-bold mb-4">{title}</h3>
+  )}
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {content_elements.map((item: any) => (
+      <div class="gallery-item">
+        {item.url && (
+          <div class="relative">
+            <Image 
+              src={item.url} 
+              alt={item.alt_text || item.caption || title}
+              width={400}
+              height={300}
+              format="webp"
+              quality={80}
+              class="w-full h-64 object-cover rounded"
+            />
+            {item.caption && (
+              <div class="text-sm text-gray-500 mt-1 italic">
+                {item.caption}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>

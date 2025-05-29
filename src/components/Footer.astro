@@ -1,0 +1,110 @@
+---
+const currentYear = new Date().getFullYear();
+
+const categories = [
+  { name: "News", href: "/news" },
+  { name: "Politics", href: "/politics" },
+  { name: "Business", href: "/business" },
+  { name: "Technology", href: "/technology" },
+  { name: "Science", href: "/science" },
+  { name: "Health", href: "/health" },
+  { name: "Entertainment", href: "/entertainment" },
+  { name: "Sports", href: "/sports" },
+];
+
+const company = [
+  { name: "About Us", href: "/about" },
+  { name: "Careers", href: "/careers" },
+  { name: "Contact", href: "/contact" },
+  { name: "Privacy Policy", href: "/privacy" },
+  { name: "Terms of Service", href: "/terms" },
+];
+
+const social = [
+  { name: "Twitter", href: "https://twitter.com" },
+  { name: "Facebook", href: "https://facebook.com" },
+  { name: "Instagram", href: "https://instagram.com" },
+  { name: "LinkedIn", href: "https://linkedin.com" },
+  { name: "YouTube", href: "https://youtube.com" },
+];
+---
+
+<footer class="border-t bg-background">
+  <div class="container px-4 py-10 md:px-6">
+    <div class="grid gap-8 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
+      <div class="flex flex-col gap-2">
+        <h3 class="text-lg font-medium">NewsHub</h3>
+        <p class="text-sm text-muted-foreground">
+          Your trusted source for the latest news and information from around the world.
+        </p>
+      </div>
+      <div class="flex flex-col gap-2">
+        <h3 class="text-lg font-medium">Categories</h3>
+        <nav class="flex flex-col gap-2">
+          {categories.map((item) => (
+            <a href={item.href} class="text-sm text-muted-foreground hover:text-foreground">
+              {item.name}
+            </a>
+          ))}
+        </nav>
+      </div>
+      <div class="flex flex-col gap-2">
+        <h3 class="text-lg font-medium">Company</h3>
+        <nav class="flex flex-col gap-2">
+          {company.map((item) => (
+            <a href={item.href} class="text-sm text-muted-foreground hover:text-foreground">
+              {item.name}
+            </a>
+          ))}
+        </nav>
+      </div>
+      <div class="flex flex-col gap-2">
+        <h3 class="text-lg font-medium">Follow Us</h3>
+        <nav class="flex flex-col gap-2">
+          {social.map((item) => (
+            <a href={item.href} class="text-sm text-muted-foreground hover:text-foreground" target="_blank" rel="noopener noreferrer">
+              {item.name}
+            </a>
+          ))}
+        </nav>
+      </div>
+      <div class="flex flex-col gap-2">
+        <h3 class="text-lg font-medium">Subscribe</h3>
+        <p class="text-sm text-muted-foreground">
+          Get the latest news delivered to your inbox.
+        </p>
+        <form class="mt-2 flex flex-col gap-2">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          />
+          <button
+            type="submit"
+            class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+          >
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="mt-8 border-t pt-8">
+      <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <p class="text-center text-sm text-muted-foreground md:text-left">
+          © {currentYear} NewsHub. All rights reserved.
+        </p>
+        <div class="flex items-center gap-4">
+          <a href="/privacy" class="text-sm text-muted-foreground hover:text-foreground">
+            Privacy Policy
+          </a>
+          <a href="/terms" class="text-sm text-muted-foreground hover:text-foreground">
+            Terms of Service
+          </a>
+          <a href="/cookies" class="text-sm text-muted-foreground hover:text-foreground">
+            Cookie Policy
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

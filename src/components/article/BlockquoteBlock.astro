@@ -1,0 +1,14 @@
+---
+import type { ArcContentElement } from '../../services/articleService';
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+const content = element.content || '';
+---
+
+<div class="blockquote-block my-6">
+  <blockquote class="border-l-4 border-gray-300 pl-4 italic text-gray-700" set:html={content} />
+</div>

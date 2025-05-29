@@ -1,0 +1,87 @@
+---
+import type { ArcContentElement } from "../../services/articleService";
+
+interface Props {
+  element: ArcContentElement;
+}
+
+const { element } = Astro.props;
+
+// Check if this is a video embed
+const isVideo = element.subtype === "videoplayer";
+const videoUrl = element.embed?.config?.videoCode || "";
+const caption = element.embed?.config?.caption || "";
+
+// Function to extract YouTube video ID from URL
+function getYouTubeEmbedUrl(url: string): string {
+  if (!url) return "";
+
+  try {
+    // Handle YouTube URLs
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      let videoId = "";
+
+      // Extract video ID from various YouTube URL formats
+      if (url.includes("youtube.com/watch")) {
+        const urlObj = new URL(url);
+        videoId = urlObj.searchParams.get("v") || "";
+      } else if (url.includes("youtu.be/")) {
+        videoId = url.split("youtu.be/")[1]?.split("?")[0] || "";
+      } else if (url.includes("youtube.com/embed/")) {
+        videoId = url.split("youtube.com/embed/")[1]?.split("?")[0] || "";
+      }
+
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+    }
+
+    // If it's already an embed code, return as is
+    if (url.includes("<iframe")) {
+      return url;
+    }
+
+    return url;
+  } catch (error) {
+    console.error("Error processing YouTube URL:", error);
+    return url;
+  }
+}
+
+const embedUrl = getYouTubeEmbedUrl(videoUrl);
+---
+
+<div class="custom-embed-block mb-8">
+  {
+    isVideo && embedUrl && (
+      <div>
+        {embedUrl.includes("<iframe") ? (
+          <div class="video-container aspect-video" set:html={embedUrl} />
+        ) : (
+          <div class="video-container aspect-video">
+            <iframe
+              src={embedUrl}
+              title={caption || "Embedded video"}
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              class="w-full h-full rounded-lg"
+            />
+          </div>
+        )}
+
+        {caption && (
+          <div class="text-sm text-gray-500 mt-2 italic">{caption}</div>
+        )}
+      </div>
+    )
+  }
+
+  {
+    !isVideo && element.embed?.config && (
+      <div class="generic-embed bg-yellow-500">
+        Unsupported embed subtype: {element.subtype}
+      </div>
+    )
+  }
+</div>
