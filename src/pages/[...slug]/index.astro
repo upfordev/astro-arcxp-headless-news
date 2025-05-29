@@ -10,24 +10,36 @@ import { getArticleByUrl } from "../../services/articleService";
 const { slug } = Astro.params;
 
 // Ensure slug is a string (TypeScript safety)
-const slugStr = slug || '';
+const slugStr = slug || "";
 
 // Check if the slug looks like a system file or non-article path
 // This prevents requests for files like robots.txt, favicon.ico, etc. from hitting the ARC API
-const isSystemFile = /\.(txt|xml|ico|json|js|css|map|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|eot)$/i.test(slugStr) || 
-                  /^(robots|sitemap|manifest|favicon|service-worker|sw)$/i.test(slugStr);
+const isSystemFile =
+  /\.(txt|xml|ico|json|js|css|map|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|eot)$/i.test(
+    slugStr
+  ) || /^(robots|sitemap|manifest|favicon|service-worker|sw)$/i.test(slugStr);
 
 // List of reserved paths that shouldn't be treated as articles
-const reservedPaths = ['api', 'assets', '_astro', 'images', 'fonts', 'css', 'js'];
-const isReservedPath = reservedPaths.some(path => slugStr.startsWith(path + '/') || slugStr === path);
+const reservedPaths = [
+  "api",
+  "assets",
+  "_astro",
+  "images",
+  "fonts",
+  "css",
+  "js",
+];
+const isReservedPath = reservedPaths.some(
+  (path) => slugStr.startsWith(path + "/") || slugStr === path
+);
 
 let article = null;
 
 // If this is a system file or reserved path, return a 404 response
 if (isSystemFile || isReservedPath) {
-  return new Response('Not found', {
+  return new Response("Not found", {
     status: 404,
-    statusText: 'Not Found'
+    statusText: "Not Found",
   });
 }
 
@@ -39,16 +51,26 @@ article = await getArticleByUrl(urlPath);
 
 // If no article was found, also return a 404
 if (!article) {
-  return new Response('Article not found', {
+  return new Response("Article not found", {
     status: 404,
-    statusText: 'Not Found'
+    statusText: "Not Found",
   });
 }
 
 // Get the article title for the page title
 const pageTitle = article?.headlines?.basic || "Article";
+
+// Caching rules
+Astro.response.headers.set(
+  "Cache-Control",
+  "s-maxage=300, stale-while-revalidate"
+);
+const time = new Date().toLocaleTimeString();
 ---
 
 <Layout title={pageTitle}>
+  <div class="ad-slot bg-gray-100 py-4 text-center text-gray-500">
+    Generated at: {time}
+  </div>
   <ArticlePage article={article} />
 </Layout>

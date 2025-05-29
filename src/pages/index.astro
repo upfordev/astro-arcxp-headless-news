@@ -18,13 +18,20 @@ const mainArticles = await getMainArticles();
 const latestArticles = await getLatestArticles();
 const briefingArticles = await getBriefingArticles();
 const cheatSheetArticles = await getCheatSheetArticles();
+
+// Caching rules
+Astro.response.headers.set(
+  "Cache-Control",
+  "s-maxage=300, stale-while-revalidate"
+);
+const time = new Date().toLocaleTimeString();
 ---
 
 <Layout title="NewsHub - Your Trusted News Source">
   <div class="content-wrapper">
     <!-- Top ad slot (full width) -->
     <div class="ad-slot bg-gray-100 py-4 text-center text-gray-500">
-      AD SLOT
+      Generated at: {time}
     </div>
 
     <!-- Main article grid (above sidebar) -->
