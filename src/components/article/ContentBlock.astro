@@ -70,7 +70,6 @@ const { element } = Astro.props;
       default:
         // Log unsupported types during development
         console.log(`Unsupported content type: ${element.type}`);
-        console.log(element);
         return (
           <div class="text-gray-500 italic">
             Unsupported content type: {element.type}

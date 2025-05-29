@@ -1,6 +1,6 @@
 ---
-// Mark this route as dynamic (not pre-rendered)
-export const prerender = false;
+// This route is server-side rendered
+// No need for prerender = false with output: 'server' in config
 
 import Layout from "../../layouts/Layout.astro";
 import ArticlePage from "../../components/ArticlePage.astro";

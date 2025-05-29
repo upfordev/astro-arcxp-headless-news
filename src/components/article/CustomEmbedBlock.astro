@@ -41,6 +41,11 @@ function getYouTubeEmbedUrl(url: string): string {
       return url;
     }
 
+    // Safeguard for jwembeds, pending how to load this
+    if (url.includes("jwplayer")) {
+      return "";
+    }
+
     return url;
   } catch (error) {
     console.error("Error processing YouTube URL:", error);
