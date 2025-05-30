@@ -1,6 +1,6 @@
 # Astro News Site with Server-Side Rendering
 
-A modern news site built with Astro and configured for server-side rendering on Vercel. This project uses the ArcXP Content API to fetch and display news articles.
+A modern news site built with Astro and configured for server-side rendering on Netlify. This project uses the ArcXP Content API to fetch and display news articles.
 
 ![News Site Screenshot](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
 
@@ -35,30 +35,39 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-## 🚀 Deploying to Vercel
+## 🚀 Deploying to Netlify
 
-This project is configured for deployment on Vercel with server-side rendering. Follow these steps to deploy:
+This project is configured for deployment on Netlify with server-side rendering. Follow these steps to deploy:
 
 1. **Push your code to a GitHub repository**
 
-2. **Connect to Vercel**
-   - Go to [Vercel](https://vercel.com) and sign in with GitHub
-   - Click "New Project" and import your repository
-   - Select the "Astro" framework preset (Vercel should auto-detect it)
+2. **Connect to Netlify**
+   - Go to [Netlify](https://netlify.com) and sign in with GitHub
+   - Click "Add new site" > "Import an existing project"
+   - Select your GitHub repository
 
-3. **Configure Environment Variables**
-   - Add the following environment variables in the Vercel project settings:
+3. **Configure Build Settings**
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+   - Netlify should automatically detect Astro as the framework
+
+4. **Configure Environment Variables**
+   - Add the following environment variables in the Netlify site settings (Site settings > Environment variables):
      - `ARC_ORG`: Your ArcXP organization name
      - `ARC_ENV`: Your ArcXP environment (e.g., sandbox, production)
      - `ARC_DEVCENTER_TOKEN`: Your ArcXP API token
 
-4. **Deploy**
-   - Click "Deploy" and wait for the build to complete
+5. **Deploy**
+   - Click "Deploy site" and wait for the build to complete
 
-5. **Verify**
+6. **Verify**
    - Once deployed, verify that your site is working correctly
    - Test article pages to ensure server-side rendering is working properly
 
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+## 📚 References
+
+- [How to do advanced caching and ISR with Astro](https://developers.netlify.com/guides/how-to-do-advanced-caching-and-isr-with-astro/) - Netlify Developers Guide
