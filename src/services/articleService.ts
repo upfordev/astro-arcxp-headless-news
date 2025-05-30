@@ -62,6 +62,8 @@ export interface ArcContentElement {
   type: string;
   content?: string;
   subtype?: string;
+  caption?: string;
+  subtitle?: string;
   embed?: {
     config?: {
       caption?: string;

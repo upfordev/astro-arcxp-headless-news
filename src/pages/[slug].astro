@@ -2,9 +2,9 @@
 // This route is server-side rendered
 // No need for prerender = false with output: 'server' in config
 
-import Layout from "../../layouts/Layout.astro";
-import ArticlePage from "../../components/ArticlePage.astro";
-import { getArticleByUrl } from "../../services/articleService";
+import Layout from "../layouts/Layout.astro";
+import ArticlePage from "../components/ArticlePage.astro";
+import { getArticleByUrl } from "../services/articleService";
 
 // Get the slug from the URL params
 const { slug } = Astro.params;
@@ -30,7 +30,7 @@ const reservedPaths = [
   "js",
 ];
 const isReservedPath = reservedPaths.some(
-  (path) => slugStr.startsWith(path + "/") || slugStr === path
+  (path) => slugStr === path
 );
 
 let article = null;
