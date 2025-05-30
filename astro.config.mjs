@@ -3,6 +3,8 @@ import tailwind from '@astrojs/tailwind';
 
 import cloudflare from '@astrojs/cloudflare';
 
+import { onRequest } from './src/middleware/bypass-cdn-cgi';
+
 // https://astro.build/config
 export default defineConfig({
 
@@ -18,5 +20,7 @@ export default defineConfig({
 
   adapter: cloudflare({
     imageService: 'cloudflare' // Use Cloudflare Image Resizing service
-  })
+  }),
+
+  middleware: [onRequest] // 👈 Register the middleware
 });

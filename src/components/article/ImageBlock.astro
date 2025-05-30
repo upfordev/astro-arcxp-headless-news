@@ -24,9 +24,13 @@ const caption =
 const alt =
   element.additional_properties?.alt_text || caption || "Article image";
 
+// function buildOptimizedImageUrl(src: string, width = 768, quality = 80) {
+//   const encoded = encodeURIComponent(src);
+//   return `/api/optimized-image?url=${encoded}&width=${width}&quality=${quality}`;
+// }
+
 function buildOptimizedImageUrl(src: string, width = 768, quality = 80) {
-  const encoded = encodeURIComponent(src);
-  return `/api/optimized-image?url=${encoded}&width=${width}&quality=${quality}`;
+  return `/cdn-cgi/image/width=${width},quality=${quality}/${encodeURIComponent(src)}`;
 }
 
 // const rawUrl = cloudflareImage(imageUrl);
