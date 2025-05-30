@@ -22,7 +22,7 @@ const cheatSheetArticles = await getCheatSheetArticles();
 // Caching rules
 Astro.response.headers.set(
   "Cache-Control",
-  "public, s-maxage=300, stale-while-revalidate"
+  "public, s-maxage=300, stale-while-revalidate=60"
 );
 const time = new Date().toLocaleTimeString();
 ---
