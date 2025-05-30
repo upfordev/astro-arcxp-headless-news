@@ -7,7 +7,12 @@ export default defineConfig({
   // Enable server-side rendering
   output: 'server',
   // Use Vercel adapter for deployment
-  adapter: vercel(),
+  adapter: vercel({
+    isr: {
+      // Create a secret token for revalidation
+      bypassToken: import.meta.env.VERCEL_REVALIDATE_TOKEN,
+    },
+  }),
   integrations: [
     tailwind({
       // Use a custom config file
