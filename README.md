@@ -1,6 +1,6 @@
 # Astro News Site with Server-Side Rendering
 
-A modern news site built with Astro and configured for server-side rendering on Netlify. This project uses the ArcXP Content API to fetch and display news articles.
+A modern news site built with Astro and configured for server-side rendering on Cloudflare. This project uses the ArcXP Content API to fetch and display news articles.
 
 ![News Site Screenshot](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
 
@@ -35,30 +35,34 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-## 🚀 Deploying to Netlify
+## 🚀 Deploying to Cloudflare Pages
 
-This project is configured for deployment on Netlify with server-side rendering. Follow these steps to deploy:
+This project is configured for deployment on Cloudflare Pages with server-side rendering and Cloudflare's image optimization service. Follow these steps to deploy:
 
 1. **Push your code to a GitHub repository**
 
-2. **Connect to Netlify**
-   - Go to [Netlify](https://netlify.com) and sign in with GitHub
-   - Click "Add new site" > "Import an existing project"
+2. **Connect to Cloudflare Pages**
+
+   - Go to [Cloudflare Pages](https://pages.cloudflare.com/) and sign in
+   - Click "Create a project" > "Connect to Git"
    - Select your GitHub repository
 
 3. **Configure Build Settings**
+
+   - Framework preset: Astro
    - Build command: `npm run build`
-   - Publish directory: `dist`
-   - Netlify should automatically detect Astro as the framework
+   - Build output directory: `dist`
 
 4. **Configure Environment Variables**
-   - Add the following environment variables in the Netlify site settings (Site settings > Environment variables):
+
+   - Add the following environment variables in the Cloudflare Pages settings (Settings > Environment variables):
      - `ARC_ORG`: Your ArcXP organization name
      - `ARC_ENV`: Your ArcXP environment (e.g., sandbox, production)
      - `ARC_DEVCENTER_TOKEN`: Your ArcXP API token
 
 5. **Deploy**
-   - Click "Deploy site" and wait for the build to complete
+
+   - Click "Save and Deploy" and wait for the build to complete
 
 6. **Verify**
    - Once deployed, verify that your site is working correctly
@@ -68,6 +72,17 @@ This project is configured for deployment on Netlify with server-side rendering.
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
 
+## 🎨 Image Optimization with Cloudflare
+
+This project uses Cloudflare's image optimization service instead of Sharp. This provides several benefits:
+
+- Better performance on Cloudflare's infrastructure
+- Automatic image optimization and delivery
+- Global CDN distribution
+
+The image configuration is set in `astro.config.mjs` and the `<Image>` components use the `quality={"high"}` parameter which is specific to Cloudflare's image service.
+
 ## 📚 References
 
-- [How to do advanced caching and ISR with Astro](https://developers.netlify.com/guides/how-to-do-advanced-caching-and-isr-with-astro/) - Netlify Developers Guide
+- [Deploy Astro Sites with Cloudflare Pages](https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/) - Cloudflare Developers Guide
+- [Cloudflare Image Resizing](https://developers.cloudflare.com/images/image-resizing/) - Cloudflare Image Documentation

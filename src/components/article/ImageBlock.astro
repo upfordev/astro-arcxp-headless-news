@@ -23,21 +23,48 @@ const caption =
   "";
 const alt =
   element.additional_properties?.alt_text || caption || "Article image";
+
+function buildOptimizedImageUrl(src: string, width = 768, quality = 80) {
+  const encoded = encodeURIComponent(src);
+  return `/api/optimized-image?url=${encoded}&width=${width}&quality=${quality}`;
+}
+
+// const rawUrl = cloudflareImage(imageUrl);
 ---
 
 <div class="image-block mb-8">
   {
     imageUrl && (
       <div>
-        <Image
+        {/* <Image
           src={imageUrl}
           alt={alt}
-          width={800}
-          height={450}
-          format="webp"
+          inferSize={true}
+          widths={[768]}
+          sizes="768px"
           quality={80}
           class="w-full rounded-lg"
         />
+        {caption && (
+          <div class="text-sm text-gray-500 mt-2 italic">{caption}</div>
+        )} */}
+
+        <img
+          src={buildOptimizedImageUrl(imageUrl)}
+          alt="Optimized article image"
+          width="768"
+          loading="lazy"
+          class="rounded-lg w-full"
+        />
+
+        {/* <img
+          src={rawUrl}
+          alt={alt}
+          width="768"
+          height="auto"
+          loading="lazy"
+          class="w-full rounded-lg object-cover"
+        /> */}
         {caption && (
           <div class="text-sm text-gray-500 mt-2 italic">{caption}</div>
         )}
