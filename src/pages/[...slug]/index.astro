@@ -63,7 +63,7 @@ const pageTitle = article?.headlines?.basic || "Article";
 // Caching rules
 Astro.response.headers.set(
   "Cache-Control",
-  "s-maxage=300, stale-while-revalidate"
+  "public, s-maxage=300, stale-while-revalidate"
 );
 const time = new Date().toLocaleTimeString();
 ---
