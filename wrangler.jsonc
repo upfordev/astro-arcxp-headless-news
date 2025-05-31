@@ -11,5 +11,10 @@
   },
   "observability": {
     "enabled": true
-  }
+  },
+
+  // This connects the domain with the worker
+  "routes": [
+    "astronewstest.upfordev.com/*"
+  ]
 }
