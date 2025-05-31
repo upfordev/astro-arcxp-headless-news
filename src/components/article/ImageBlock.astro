@@ -24,13 +24,13 @@ const caption =
 const alt =
   element.additional_properties?.alt_text || caption || "Article image";
 
-// function buildOptimizedImageUrl(src: string, width = 768, quality = 80) {
-//   const encoded = encodeURIComponent(src);
-//   return `/api/optimized-image?url=${encoded}&width=${width}&quality=${quality}`;
-// }
-
+// https://docs.astro.build/en/guides/environment-variables/
+const isDev = import.meta.env.DEV;
 function buildOptimizedImageUrl(src: string, width = 768, quality = 80) {
-  return `/cdn-cgi/image/width=${width},quality=${quality}/${encodeURIComponent(src)}`;
+  // Figure out if I can get resizing working locally
+  return isDev
+    ? src
+    : `/cdn-cgi/image/width=${width},quality=${quality}/${encodeURIComponent(src)}`;
 }
 
 // const rawUrl = cloudflareImage(imageUrl);
@@ -48,10 +48,7 @@ function buildOptimizedImageUrl(src: string, width = 768, quality = 80) {
           sizes="768px"
           quality={80}
           class="w-full rounded-lg"
-        />
-        {caption && (
-          <div class="text-sm text-gray-500 mt-2 italic">{caption}</div>
-        )} */}
+        /> */}
 
         <img
           src={buildOptimizedImageUrl(imageUrl)}
@@ -61,14 +58,6 @@ function buildOptimizedImageUrl(src: string, width = 768, quality = 80) {
           class="rounded-lg w-full"
         />
 
-        {/* <img
-          src={rawUrl}
-          alt={alt}
-          width="768"
-          height="auto"
-          loading="lazy"
-          class="w-full rounded-lg object-cover"
-        /> */}
         {caption && (
           <div class="text-sm text-gray-500 mt-2 italic">{caption}</div>
         )}
