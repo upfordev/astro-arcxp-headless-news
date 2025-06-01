@@ -1,0 +1,17 @@
+---
+// Caching rules with explicit directives for Cloudflare
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=60, s-maxage=300, stale-while-revalidate=86400"
+);
+
+// Add Cloudflare-specific headers
+Astro.response.headers.set("CDN-Cache-Control", "public, max-age=300");
+Astro.response.headers.set("Surrogate-Control", "public, max-age=300");
+const time = new Date().toLocaleTimeString();
+---
+
+<div>
+  Generated at: {time}
+</div>
+<div>{Astro.params.slug}</div>

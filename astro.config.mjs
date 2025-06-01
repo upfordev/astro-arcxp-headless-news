@@ -3,7 +3,7 @@ import tailwind from '@astrojs/tailwind';
 
 import cloudflare from '@astrojs/cloudflare';
 
-import { onRequest } from './src/middleware/bypass-cdn-cgi';
+// Using root-level middleware.ts file instead of manual registration
 
 // https://astro.build/config
 export default defineConfig({
@@ -22,5 +22,5 @@ export default defineConfig({
     imageService: 'cloudflare' // Use Cloudflare Image Resizing service
   }),
 
-  middleware: [onRequest] // 👈 Register the middleware
+  // Middleware is now automatically detected from src/middleware.ts
 });

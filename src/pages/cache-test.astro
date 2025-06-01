@@ -1,0 +1,72 @@
+---
+// Set strong cache headers for Cloudflare
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=60, s-maxage=300, stale-while-revalidate=86400"
+);
+Astro.response.headers.set("CDN-Cache-Control", "public, max-age=300");
+Astro.response.headers.set("Surrogate-Control", "public, max-age=300");
+
+// Generate dynamic content that would change on each request
+// This helps us verify if caching is working
+const timestamp = new Date().toISOString();
+const randomValue = Math.random().toString(36).substring(2, 15);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Cache Test Page</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .info-box {
+        background-color: #f0f0f0;
+        border: 1px solid #ddd;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 4px;
+      }
+      .timestamp {
+        color: #666;
+        font-size: 0.9rem;
+      }
+      .random {
+        color: #0066cc;
+        font-weight: bold;
+      }
+      .instructions {
+        background-color: #fffbea;
+        border: 1px solid #ffe58f;
+        padding: 1rem;
+        margin-top: 2rem;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Cloudflare Cache Test Page</h1>
+    
+    <div class="info-box">
+      <h2>Page Generation Information</h2>
+      <p>This content was generated at: <span class="timestamp">{timestamp}</span></p>
+      <p>Random value: <span class="random">{randomValue}</span></p>
+    </div>
+    
+    <div class="instructions">
+      <h2>How to Test Caching</h2>
+      <p>If this page is being cached by Cloudflare:</p>
+      <ol>
+        <li>The timestamp and random value above should <strong>not change</strong> when you refresh the page</li>
+        <li>You should see <code>CF-Cache-Status: HIT</code> in the response headers after the first load</li>
+        <li>After 5 minutes (300 seconds), the cache should refresh with new values</li>
+      </ol>
+      <p>Check the response headers in your browser's developer tools (Network tab) to confirm caching status.</p>
+    </div>
+  </body>
+</html>

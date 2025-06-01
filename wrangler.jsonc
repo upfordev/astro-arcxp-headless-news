@@ -3,7 +3,7 @@
   "name": "my-astro-app",
   "main": "./dist/_worker.js/index.js",
   // Update to today's date
-  "compatibility_date": "2025-03-25",
+  "compatibility_date": "2025-05-31",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "binding": "ASSETS",
@@ -13,8 +13,11 @@
     "enabled": true
   },
 
+  // Cache configuration is managed through headers in the middleware
+
+
   // This connects the domain with the worker
-  "routes": [
-    "astronewstest.upfordev.com/*"
-  ]
+  // "routes": [
+  //   "www.upfordev.com/*"
+  // ]
 }
