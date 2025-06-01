@@ -61,10 +61,23 @@ if (!article) {
 const pageTitle = article?.headlines?.basic || "Article";
 
 // Caching rules
+// Tell the browser to always check the freshness of the cache
 Astro.response.headers.set(
   "Cache-Control",
-  "s-maxage=300, stale-while-revalidate"
+  "public, max-age=0, must-revalidate"
 );
+
+// Tell Netlify's CDN to treat it as fresh for 5 minutes, then for up to a week return a stale version
+// while it revalidates. Use Durable Cache to minimize the need for serverless function calls.
+Astro.response.headers.set(
+  "Netlify-CDN-Cache-Control",
+  "public, durable, s-maxage=300, stale-while-revalidate=604800"
+);
+
+// Tag the page with the book ID
+if (slug) {
+  Astro.response.headers.set("netlify-cache-tag", slug);
+}
 const time = new Date().toLocaleTimeString();
 ---
 
