@@ -8,6 +8,13 @@ import netlify from "@astrojs/netlify";
 export default defineConfig({
   // Enable server-side rendering
   output: 'server',
+
+  // Disable origin check for webhook
+  security: {
+    checkOrigin: false
+  },
+  // TODO: more secure preferred
+
   adapter: netlify({}),
   integrations: [
     tailwind({
