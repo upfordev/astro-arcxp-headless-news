@@ -1,0 +1,42 @@
+---
+function getRandomItems(arr, numItems) {
+  const copy = [...arr]; // Create a copy of the array
+  const randomItems = [];
+
+  for (let i = 0; i < numItems; i++) {
+    if (copy.length === 0) {
+      break; // Stop if copy array is empty
+    }
+
+    const randomIndex = Math.floor(Math.random() * copy.length);
+    randomItems.push(copy[randomIndex]);
+    copy.splice(randomIndex, 1); // Remove the selected item from the copy
+  }
+  return randomItems;
+}
+
+const trendingArticles = await fetch(
+  "https://jsonplaceholder.typicode.com/posts"
+);
+const articles = await trendingArticles.json();
+---
+
+<div class="popular-stories bg-gray-50 p-4 mb-6 rounded-md">
+  <h3 class="text-lg font-bold mb-4 border-b border-gray-200 pb-2">
+    TRENDING ARTICLES <p class="text-sm text-gray-500">
+      Generated at: {new Date().toLocaleTimeString()}
+    </p>
+  </h3>
+
+  <ul class="space-y-4">
+    {
+      getRandomItems(articles, 4).map((article) => (
+        <li class="border-b border-gray-200 pb-3">
+          <a href="#" class="hover:text-primary">
+            <h4 class="font-semibold text-sm">{article.title}</h4>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>

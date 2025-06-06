@@ -2,6 +2,7 @@
 import type { ArcArticle } from '../services/articleService';
 import ArticleHeader from './article/ArticleHeader.astro';
 import ArticleBody from './article/ArticleBody.astro';
+import TrendingArticles from './TrendingArticles.astro';
 
 interface Props {
   article: ArcArticle;
@@ -22,18 +23,7 @@ const { article } = Astro.props;
       <!-- Right rail -->
       <aside class="right-rail lg:w-72 shrink-0">
         <!-- Popular stories section -->
-        <div class="popular-stories bg-gray-50 p-4 mb-6 rounded-md">
-          <h3 class="text-lg font-bold mb-4 border-b border-gray-200 pb-2">TRENDING ARTICLES</h3>
-          <ul class="space-y-4">
-            {[1, 2, 3, 4].map(() => (
-              <li class="border-b border-gray-200 pb-3">
-                <a href="#" class="hover:text-primary">
-                  <h4 class="font-semibold text-sm">Placeholder headline for a popular article that would appear in the right rail</h4>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <TrendingArticles server:defer />
 
         <!-- Advertisement slot -->
         <div class="ad-slot bg-gray-100 p-4 mb-6 text-center text-gray-500 rounded-md">
