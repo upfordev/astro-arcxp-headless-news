@@ -59,9 +59,9 @@ jobs:
 
           echo "Setting secrets for environment: $ENV_NAME"
 
-          echo "$ARC_ORG" | npx wrangler secret put ARC_ORG --env "$ENV_NAME" --yes
-          echo "$ARC_ENV" | npx wrangler secret put ARC_ENV --env "$ENV_NAME" --yes
-          echo "$ARC_DEVCENTER_TOKEN" | npx wrangler secret put ARC_DEVCENTER_TOKEN --env "$ENV_NAME" --yes
+          echo "$ARC_ORG" | npx wrangler secret put ARC_ORG --env "$ENV_NAME"
+          echo "$ARC_ENV" | npx wrangler secret put ARC_ENV --env "$ENV_NAME"
+          echo "$ARC_DEVCENTER_TOKEN" | npx wrangler secret put ARC_DEVCENTER_TOKEN --env "$ENV_NAME"
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
