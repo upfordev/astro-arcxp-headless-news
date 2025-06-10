@@ -1,16 +1,18 @@
-name: Deploy Worker
+name: Deploy Worker (per-branch)
 
 on:
   push:
     branches:
-      - ssr-cloudflare
+      - "**" # Trigger on any branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -23,14 +25,33 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Check built worker exists
+      - name: Derive environment name from branch
+        id: env
         run: |
-          echo "Checking for _worker.js entry..."
-          ls -la ./dist/_worker.js/index.js
+          RAW_BRANCH="${GITHUB_REF##*/}"
+          ENV_NAME=$(echo "$RAW_BRANCH" | tr '/' '-' | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')
+          WORKER_NAME="${ENV_NAME}-workflow-test-app"
+          echo "env_name=${ENV_NAME}" >> $GITHUB_OUTPUT
+          echo "worker_name=${WORKER_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Patch wrangler.jsonc with dynamic env
+        run: |
+          ENV_NAME="${{ steps.env.outputs.env_name }}"
+          WORKER_NAME="${{ steps.env.outputs.worker_name }}"
+          echo "Deploying to environment: $ENV_NAME ($WORKER_NAME)"
+
+          # Remove comments from JSONC to avoid jq parse errors
+          grep -v '^\s*//' wrangler.jsonc > wrangler_clean.json
+
+          # Inject new env block with dynamic name and main entrypoint
+          jq ". + { env: { \"$ENV_NAME\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\" } } }" wrangler_clean.json > wrangler.jsonc
+
+      - name: Verify worker entrypoint exists
+        run: ls -l ./dist/_worker.js/index.js
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # command: deploy --env ssr-cloudflare
+          command: deploy --env ${{ steps.env.outputs.env_name }}
