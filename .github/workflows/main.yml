@@ -49,6 +49,20 @@ jobs:
       - name: Verify worker entrypoint exists
         run: ls -l ./dist/_worker.js/index.js
 
+      - name: Add Wrangler secrets
+        env:
+          ARC_ORG: ${{ secrets.ARC_ORG }}
+          ARC_ENV: ${{ secrets.ARC_ENV }}
+          ARC_DEVCENTER_TOKEN: ${{ secrets.ARC_DEVCENTER_TOKEN }}
+        run: |
+          ENV_NAME="${{ steps.env.outputs.env_name }}"
+
+          echo "Setting secrets for environment: $ENV_NAME"
+
+          echo "$ARC_ORG" | npx wrangler secret put ARC_ORG --env "$ENV_NAME" --yes
+          echo "$ARC_ENV" | npx wrangler secret put ARC_ENV --env "$ENV_NAME" --yes
+          echo "$ARC_DEVCENTER_TOKEN" | npx wrangler secret put ARC_DEVCENTER_TOKEN --env "$ENV_NAME" --yes
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
