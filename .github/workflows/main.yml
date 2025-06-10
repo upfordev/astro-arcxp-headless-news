@@ -1,16 +1,36 @@
 name: Deploy Worker
+
 on:
   push:
     branches:
       - ssr-cloudflare
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - name: Build & Deploy Worker
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Check built worker exists
+        run: |
+          echo "Checking for _worker.js entry..."
+          ls -la ./dist/_worker.js/index.js
+
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # command: deploy --env ssr-cloudflare
