@@ -52,13 +52,14 @@ const randomValue = Math.random().toString(36).substring(2, 15);
   <body>
     <h1>Cloudflare Cache Test Page</h1>
 
-    <p>ARC_ENV: {import.meta.env.ARC_ENV}</p>
+    <p>ARC_ENV (import.meta): {import.meta.env.ARC_ENV}</p>
+    <p>ARC_ENV (astro runtime): {Astro.locals.runtime.env.ARC_ENV}</p>
 
     <div class="info-box">
       <h2>Page Generation Information</h2>
       <p>
-        This content was generated at: <span class="timestamp"
-          >{timestamp}</span>
+        This content was generated at: <span class="timestamp">{timestamp}</span
+        >
       </p>
       <p>Random value: <span class="random">{randomValue}</span></p>
     </div>
