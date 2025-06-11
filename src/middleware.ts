@@ -4,8 +4,6 @@
 import type { MiddlewareHandler } from 'astro';
 
 export const onRequest: MiddlewareHandler = async ({ request, locals }, next) => {
-  console.log('Root middleware executed');
-
   // Skip caching for non-GET requests
   if (request.method !== 'GET') {
     return next();
@@ -22,6 +20,11 @@ export const onRequest: MiddlewareHandler = async ({ request, locals }, next) =>
     }
     return next();
   }
+
+  console.log('Root middleware executed');
+
+
+
 
   // Check if we're in a Cloudflare environment
   // @ts-expect-error - Cloudflare specific global
@@ -44,7 +47,7 @@ export const onRequest: MiddlewareHandler = async ({ request, locals }, next) =>
 
       // Get the response from Astro
       const response = await next();
-      
+
       // Add debug headers to verify middleware execution
       // Create a new response with Cloudflare-specific cache directives
       const newResponse = new Response(response.body, {
@@ -71,14 +74,14 @@ export const onRequest: MiddlewareHandler = async ({ request, locals }, next) =>
             'Cache-Control',
             'public, max-age=60, s-maxage=300, stale-while-revalidate=86400'
           );
-          
+
           // Cloudflare-specific cache headers
           newResponse.headers.set('CDN-Cache-Control', 'public, max-age=300');
           newResponse.headers.set('Surrogate-Control', 'public, max-age=300');
-          
+
           // Force Cloudflare to cache this response
           newResponse.headers.set('CF-Cache-Status', 'DYNAMIC');
-          
+
           // Add Cache-Tag for easier cache management in Cloudflare dashboard
           newResponse.headers.set('Cache-Tag', 'astro-ssr');
         }
@@ -97,7 +100,7 @@ export const onRequest: MiddlewareHandler = async ({ request, locals }, next) =>
 
   // Fallback if cache is not available or there's an error
   const response = await next();
-  
+
   // Create a new response with Cloudflare-specific cache directives
   const newResponse = new Response(response.body, {
     status: response.status,
@@ -121,14 +124,14 @@ export const onRequest: MiddlewareHandler = async ({ request, locals }, next) =>
       'Cache-Control',
       'public, max-age=60, s-maxage=300, stale-while-revalidate=86400'
     );
-    
+
     // Cloudflare-specific cache headers
     newResponse.headers.set('CDN-Cache-Control', 'public, max-age=300');
     newResponse.headers.set('Surrogate-Control', 'public, max-age=300');
-    
+
     // Force Cloudflare to cache this response
     newResponse.headers.set('CF-Cache-Status', 'DYNAMIC');
-    
+
     // Add Cache-Tag for easier cache management in Cloudflare dashboard
     newResponse.headers.set('Cache-Tag', 'astro-ssr');
   }

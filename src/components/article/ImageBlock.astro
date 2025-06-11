@@ -24,8 +24,10 @@ const caption =
 const alt =
   element.additional_properties?.alt_text || caption || "Article image";
 
+const { env: runtimeEnv } = Astro.locals.runtime;
+
 // https://docs.astro.build/en/guides/environment-variables/
-const isDev = import.meta.env.DEV;
+const isDev = import.meta.env.DEV ?? runtimeEnv.DEV;
 function buildOptimizedImageUrl(src: string, width = 768, quality = 80) {
   // Figure out if I can get resizing working locally
   return isDev
