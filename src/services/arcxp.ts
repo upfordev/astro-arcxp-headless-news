@@ -69,12 +69,14 @@ export interface ArcRequestOptions {
   [key: string]: any; // Allow additional query params
 }
 
+import { getSecret } from 'astro:env/server';
+
 /**
  * Builds the base URL for ARCXP API based on environment variables
  */
 export const getBaseUrl = (): string => {
-  const org = import.meta.env.ARC_ORG;
-  const env = import.meta.env.ARC_ENV;
+  const org = import.meta.env.ARC_ORG ?? getSecret('ARC_ORG');
+  const env = import.meta.env.ARC_ENV ?? getSecret('ARC_ENV');
 
   // If env is production, omit the env part
   if (env === 'production') {
@@ -89,7 +91,7 @@ export const getBaseUrl = (): string => {
  * This can be reused for different ARCXP API endpoints
  */
 export const createArcFetch = () => {
-  const token = import.meta.env.ARC_DEVCENTER_TOKEN;
+  const token = import.meta.env.ARC_DEVCENTER_TOKEN ?? getSecret('ARC_DEVCENTER_TOKEN');
 
   return async (url: string, options: RequestInit = {}) => {
     const headers = {
