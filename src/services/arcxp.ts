@@ -73,10 +73,8 @@ export interface ArcRequestOptions {
  * Builds the base URL for ARCXP API based on environment variables
  */
 export const getBaseUrl = (): string => {
-  const { env: runtimeEnv } = Astro.locals.runtime;
-
-  const org = import.meta.env.ARC_ORG ?? runtimeEnv.ARC_ORG;
-  const env = import.meta.env.ARC_ENV ?? runtimeEnv.ARC_ENV;
+  const org = import.meta.env.ARC_ORG;
+  const env = import.meta.env.ARC_ENV;
 
   // If env is production, omit the env part
   if (env === 'production') {
@@ -91,9 +89,7 @@ export const getBaseUrl = (): string => {
  * This can be reused for different ARCXP API endpoints
  */
 export const createArcFetch = () => {
-  const { env: runtimeEnv } = Astro.locals.runtime;
-
-  const token = import.meta.env.ARC_DEVCENTER_TOKEN ?? runtimeEnv.ARC_DEVCENTER_TOKEN;
+  const token = import.meta.env.ARC_DEVCENTER_TOKEN;
 
   return async (url: string, options: RequestInit = {}) => {
     const headers = {

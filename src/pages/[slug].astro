@@ -64,14 +64,11 @@ Astro.response.headers.set(
   "s-maxage=300, stale-while-revalidate"
 );
 const time = new Date().toLocaleTimeString();
-
-const { env } = Astro.locals.runtime;
-const secret = env.DB_PASSWORD;
 ---
 
 <Layout title={pageTitle}>
   <div class="ad-slot bg-gray-100 py-4 text-center text-gray-500">
-    Generated at: {time} ({secret})
+    Generated at: {time}
   </div>
   <ArticlePage article={article} />
 </Layout>
