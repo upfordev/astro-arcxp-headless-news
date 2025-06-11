@@ -43,23 +43,23 @@ jobs:
           # Inject new env block with dynamic name and main entrypoint
           jq ". + { env: { \"$ENV_NAME\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\" } } }" wrangler_clean.json > wrangler.jsonc
 
-      # - name: Add Wrangler secrets
-      #   env:
-      #     ARC_ORG: ${{ secrets.ARC_ORG }}
-      #     ARC_ENV: ${{ secrets.ARC_ENV }}
-      #     ARC_DEVCENTER_TOKEN: ${{ secrets.ARC_DEVCENTER_TOKEN }}
-      #     CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      #     CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      #   run: |
-      #     ENV_NAME="${{ steps.env.outputs.env_name }}"
+      - name: Add Wrangler secrets
+        env:
+          ARC_ORG: ${{ secrets.ARC_ORG }}
+          ARC_ENV: ${{ secrets.ARC_ENV }}
+          ARC_DEVCENTER_TOKEN: ${{ secrets.ARC_DEVCENTER_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          ENV_NAME="${{ steps.env.outputs.env_name }}"
 
-      #     echo "Setting secrets for environment: $ENV_NAME"
+          echo "Setting secrets for environment: $ENV_NAME"
 
-      #     echo "$ARC_ORG" | npx wrangler secret put ARC_ORG --env "$ENV_NAME"
-      #     echo "$ARC_ENV" | npx wrangler secret put ARC_ENV --env "$ENV_NAME"
-      #     echo "$ARC_DEVCENTER_TOKEN" | npx wrangler secret put ARC_DEVCENTER_TOKEN --env "$ENV_NAME"
-      #     echo "$CLOUDFLARE_API_TOKEN" | npx wrangler secret put CLOUDFLARE_API_TOKEN --env "$ENV_NAME"
-      #     echo "$CLOUDFLARE_ACCOUNT_ID" | npx wrangler secret put CLOUDFLARE_ACCOUNT_ID --env "$ENV_NAME"
+          echo "$ARC_ORG" | npx wrangler secret put ARC_ORG --env "$ENV_NAME"
+          echo "$ARC_ENV" | npx wrangler secret put ARC_ENV --env "$ENV_NAME"
+          echo "$ARC_DEVCENTER_TOKEN" | npx wrangler secret put ARC_DEVCENTER_TOKEN --env "$ENV_NAME"
+          echo "$CLOUDFLARE_API_TOKEN" | npx wrangler secret put CLOUDFLARE_API_TOKEN --env "$ENV_NAME"
+          echo "$CLOUDFLARE_ACCOUNT_ID" | npx wrangler secret put CLOUDFLARE_ACCOUNT_ID --env "$ENV_NAME"
 
       - name: Build project
         env:
