@@ -22,9 +22,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build project
-        run: npm run build
-
       - name: Derive environment name from branch
         id: env
         run: |
@@ -66,6 +63,9 @@ jobs:
           echo "$ARC_DEVCENTER_TOKEN" | npx wrangler secret put ARC_DEVCENTER_TOKEN --env "$ENV_NAME"
           echo "$CLOUDFLARE_API_TOKEN" | npx wrangler secret put CLOUDFLARE_API_TOKEN --env "$ENV_NAME"
           echo "$CLOUDFLARE_ACCOUNT_ID" | npx wrangler secret put CLOUDFLARE_ACCOUNT_ID --env "$ENV_NAME"
+
+      - name: Build project
+        run: npm run build
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
