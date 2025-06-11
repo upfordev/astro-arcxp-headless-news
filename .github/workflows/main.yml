@@ -62,6 +62,10 @@ jobs:
           echo "$CLOUDFLARE_ACCOUNT_ID" | npx wrangler secret put CLOUDFLARE_ACCOUNT_ID --env "$ENV_NAME"
 
       - name: Build project
+        env:
+          ARC_ORG: ${{ secrets.ARC_ORG }}
+          ARC_ENV: ${{ secrets.ARC_ENV }}
+          ARC_DEVCENTER_TOKEN: ${{ secrets.ARC_DEVCENTER_TOKEN }}
         run: npm run build
 
       - name: Verify worker entrypoint exists
