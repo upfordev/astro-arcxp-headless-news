@@ -32,8 +32,10 @@ jobs:
       - name: Derive environment name from branch
         id: env
         run: |
-          RAW_BRANCH="${GITHUB_REF##*/}"
-          ENV_NAME=$(echo "$RAW_BRANCH" | tr '/' '-' | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')
+          # Get full branch name (refs/heads/feature/test -> feature/test)
+          FULL_BRANCH=${GITHUB_REF#refs/heads/}
+          # Replace slashes with hyphens
+          ENV_NAME=$(echo "$FULL_BRANCH" | tr '/' '-' | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')
           WORKER_NAME="${ENV_NAME}-workflow-test-app"
           echo "env_name=${ENV_NAME}" >> $GITHUB_OUTPUT
           echo "worker_name=${WORKER_NAME}" >> $GITHUB_OUTPUT
