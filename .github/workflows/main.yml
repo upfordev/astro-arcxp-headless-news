@@ -12,7 +12,7 @@ jobs:
     env:
       # Define environment variables once at the job level
       # Application name used for worker deployment
-      APP_NAME: staging
+      APP_NAME: stg
       # Secrets stored in github
       ARC_ORG: ${{ secrets.ARC_ORG }}
       ARC_ENV: ${{ secrets.ARC_ENV }}
@@ -37,7 +37,7 @@ jobs:
           FULL_BRANCH=${GITHUB_REF#refs/heads/}
           # Replace slashes with hyphens
           ENV_NAME=$(echo "$FULL_BRANCH" | tr '/' '-' | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')
-          WORKER_NAME="${ENV_NAME}.${{ env.APP_NAME }}"
+          WORKER_NAME="${ENV_NAME}-${{ env.APP_NAME }}"
           echo "env_name=${ENV_NAME}" >> $GITHUB_OUTPUT
           echo "worker_name=${WORKER_NAME}" >> $GITHUB_OUTPUT
 
