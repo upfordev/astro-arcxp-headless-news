@@ -51,22 +51,41 @@ const randomValue = Math.random().toString(36).substring(2, 15);
   </head>
   <body>
     <h1>Cloudflare Cache Test Page</h1>
-    
+
+    <p>ARC_ENV (import.meta): {import.meta.env.ARC_ENV}</p>
+    <!-- <p>ARC_ENV (astro runtime): {Astro.locals.runtime.env.ARC_ENV}</p> -->
+    <p>ARC_ENV (process): {process.env.ARC_ENV}</p>
+
     <div class="info-box">
       <h2>Page Generation Information</h2>
-      <p>This content was generated at: <span class="timestamp">{timestamp}</span></p>
+      <p>
+        This content was generated at: <span class="timestamp">{timestamp}</span
+        >
+      </p>
       <p>Random value: <span class="random">{randomValue}</span></p>
     </div>
-    
+
     <div class="instructions">
       <h2>How to Test Caching</h2>
       <p>If this page is being cached by Cloudflare:</p>
       <ol>
-        <li>The timestamp and random value above should <strong>not change</strong> when you refresh the page</li>
-        <li>You should see <code>CF-Cache-Status: HIT</code> in the response headers after the first load</li>
-        <li>After 5 minutes (300 seconds), the cache should refresh with new values</li>
+        <li>
+          The timestamp and random value above should <strong>not change</strong
+          > when you refresh the page
+        </li>
+        <li>
+          You should see <code>CF-Cache-Status: HIT</code> in the response headers
+          after the first load
+        </li>
+        <li>
+          After 5 minutes (300 seconds), the cache should refresh with new
+          values
+        </li>
       </ol>
-      <p>Check the response headers in your browser's developer tools (Network tab) to confirm caching status.</p>
+      <p>
+        Check the response headers in your browser's developer tools (Network
+        tab) to confirm caching status.
+      </p>
     </div>
   </body>
 </html>
