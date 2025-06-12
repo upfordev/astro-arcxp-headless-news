@@ -5,6 +5,7 @@ on:
     branches:
       - "**" # Include all branches
       - "!main" # Exclude main branch
+      - "!release-please--**" # Exclude release-please branches
 
 jobs:
   deploy:
