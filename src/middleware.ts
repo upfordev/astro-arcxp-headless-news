@@ -1,140 +1,126 @@
-// src/middleware.ts
-// This is a root-level middleware file that Astro will automatically detect
-
-import type { MiddlewareHandler } from 'astro';
-
-export const onRequest: MiddlewareHandler = async ({ request, locals }, next) => {
-  // Skip caching for non-GET requests
+const cachingMiddleware = async (
+  { request }: { request: Request },
+  next: () => Promise<Response>,
+) => {
+  // Only apply caching logic for GET requests
   if (request.method !== 'GET') {
-    return next();
+    console.log(`Cache middleware - SKIPPING (Method: ${request.method})`);
+    return await next();
   }
 
-  // Skip caching for API routes and asset URLs
-  const url = new URL(request.url);
-  if (url.pathname.startsWith('/api/') ||
-      url.pathname.includes('/cdn-cgi/') ||
-      url.pathname.match(/\.(jpg|jpeg|png|gif|svg|webp|css|js|woff|woff2|ttf|eot)$/i)) {
-    // Let Cloudflare handle image optimization requests directly
-    if (url.pathname.startsWith('/cdn-cgi/image/')) {
-      return fetch(request);
+  // caches.default is only available on cloudflare workers
+  // other platforms implementing the Web Cache API require using the `open` method
+  // `const cache = await caches.open("default")`
+  const cache = (caches as any).default as Cache;
+
+  const cachedResponse = await cache.match(request);
+
+  // return the cached response if there was one
+  if (cachedResponse) {
+    const headers = new Headers(cachedResponse.headers);
+    const cacheTime = headers.get('X-Cache-Time');
+    let age = 0;
+    if (cacheTime) {
+      const now = Math.floor(Date.now() / 1000);
+      age = now - parseInt(cacheTime, 10); // Ensure base 10
+      if (age < 0) age = 0; // Handle potential clock skew
     }
-    return next();
-  }
+    headers.set('Age', age.toString());
+    console.log("Cache middleware - HIT (Age: " + age + " seconds)");
+    // Optionally, remove X-Cache-Time from client-facing headers
+    // headers.delete('X-Cache-Time');
 
-  console.log('Root middleware executed');
-
-
-
-
-  // Check if we're in a Cloudflare environment
-  // @ts-expect-error - Cloudflare specific global
-  const cache = globalThis.caches?.default;
-
-  if (cache) {
-    try {
-      // Create a cache key from the request URL
-      const cacheKey = new Request(url.toString(), {
-        method: 'GET',
-        headers: request.headers
+    if (!cachedResponse.body) {
+      // Handle cached responses without a body (e.g., 204, 304 from cache)
+      return new Response(null, {
+        status: cachedResponse.status,
+        statusText: cachedResponse.statusText,
+        headers, // Headers now include 'Age'
       });
+    }
 
-      // Try to get from cache first
-      const cachedResponse = await cache.match(cacheKey);
-      if (cachedResponse) {
-        console.log(`Cache HIT for ${url.pathname}`);
-        return cachedResponse;
+    // For cached responses with a body, use .tee()
+    const [body1, _body2] = cachedResponse.body.tee();
+    return new Response(body1, {
+      status: cachedResponse.status,
+      statusText: cachedResponse.statusText,
+      headers, // Headers now include 'Age'
+    });
+  } else {
+    // render a fresh response
+    const response = await next();
+    console.log("Cache middleware - MISS - Status: " + response.status);
+
+    if (response.status === 404) {
+      // Handle 404 responses specifically
+      let bodyFor404Cache = null;
+      let bodyFor404Client = null;
+
+      if (response.body) {
+        [bodyFor404Cache, bodyFor404Client] = response.body.tee();
       }
 
-      // Get the response from Astro
-      const response = await next();
+      const responseHeadersForCache = new Headers(response.headers);
+      // Override or set Cache-Control for 404s to be cached for 10 minutes
+      responseHeadersForCache.set('Cache-Control', 'public, max-age=600');
+      const nowFor404 = Math.floor(Date.now() / 1000);
+      responseHeadersForCache.set('X-Cache-Time', nowFor404.toString());
 
-      // Add debug headers to verify middleware execution
-      // Create a new response with Cloudflare-specific cache directives
-      const newResponse = new Response(response.body, {
+      const responseToCache404 = new Response(bodyFor404Cache, {
+        status: 404,
+        statusText: response.statusText,
+        headers: responseHeadersForCache,
+      });
+      await cache.put(request, responseToCache404);
+
+      // Return the original 404 response to the client (with its original headers and body stream)
+      return new Response(bodyFor404Client, {
+        status: 404,
+        statusText: response.statusText,
+        headers: response.headers, // Client gets original headers from the 404 response
+      });
+    } else {
+      // Existing logic for non-404 responses
+      if (!response.body) {
+        // Handle responses without a body (e.g., 204, 304, HEAD requests)
+        const responseHeadersForCache = new Headers(response.headers);
+        const now = Math.floor(Date.now() / 1000);
+        responseHeadersForCache.set('X-Cache-Time', now.toString());
+        const responseToCache = new Response(null, { // body is null
+          status: response.status,
+          statusText: response.statusText,
+          headers: responseHeadersForCache,
+        });
+        await cache.put(request, responseToCache);
+        return response; // Return the original response, its body (null) is safe
+      }
+
+      // For responses with a body, use .tee()
+      const [bodyForCache, bodyForClient] = response.body.tee();
+      const responseHeadersForCache = new Headers(response.headers);
+      const now = Math.floor(Date.now() / 1000);
+      responseHeadersForCache.set('X-Cache-Time', now.toString());
+
+      const responseToCache = new Response(bodyForCache, {
         status: response.status,
         statusText: response.statusText,
-        headers: response.headers,
-        // @ts-expect-error - Cloudflare specific property
-        cf: {
-          cacheTtl: 300,  // Cache for 5 minutes (300 seconds)
-          cacheEverything: true,
-          minify: { html: true },
-          mirage: true
-        }
+        headers: responseHeadersForCache,
       });
-      newResponse.headers.set('X-Middleware-Cache', 'executed-v2');
-      newResponse.headers.set('X-Middleware-Time', new Date().toISOString());
+      await cache.put(request, responseToCache);
 
-      // Only cache successful responses
-      if (newResponse.status === 200) {
-        // Make sure cache headers are set
-        if (!newResponse.headers.has('Cache-Control')) {
-          // Standard cache headers
-          newResponse.headers.set(
-            'Cache-Control',
-            'public, max-age=60, s-maxage=300, stale-while-revalidate=86400'
-          );
-
-          // Cloudflare-specific cache headers
-          newResponse.headers.set('CDN-Cache-Control', 'public, max-age=300');
-          newResponse.headers.set('Surrogate-Control', 'public, max-age=300');
-
-          // Force Cloudflare to cache this response
-          newResponse.headers.set('CF-Cache-Status', 'DYNAMIC');
-
-          // Add Cache-Tag for easier cache management in Cloudflare dashboard
-          newResponse.headers.set('Cache-Tag', 'astro-ssr');
-        }
-
-        // Store in Cloudflare's cache
-        // @ts-expect-error - Cloudflare specific API
-        locals.waitUntil?.(cache.put(cacheKey, newResponse.clone()));
-        console.log(`Cached ${url.pathname}`);
-      }
-
-      return newResponse;
-    } catch (error) {
-      console.error('Cache error:', error);
+      // Return a new response with the other body stream to the client
+      return new Response(bodyForClient, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers, // Client gets original headers
+      });
     }
   }
-
-  // Fallback if cache is not available or there's an error
-  const response = await next();
-
-  // Create a new response with Cloudflare-specific cache directives
-  const newResponse = new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers: response.headers,
-    // @ts-expect-error - Cloudflare specific property
-    cf: {
-      cacheTtl: 300,  // Cache for 5 minutes (300 seconds)
-      cacheEverything: true,
-      minify: { html: true },
-      mirage: true
-    }
-  });
-  newResponse.headers.set('X-Middleware-Fallback', 'no-cache-api');
-  newResponse.headers.set('X-Middleware-Time', new Date().toISOString());
-
-  // Add cache headers even if we can't use the Cache API
-  if (!newResponse.headers.has('Cache-Control') && newResponse.status === 200) {
-    // Standard cache headers
-    newResponse.headers.set(
-      'Cache-Control',
-      'public, max-age=60, s-maxage=300, stale-while-revalidate=86400'
-    );
-
-    // Cloudflare-specific cache headers
-    newResponse.headers.set('CDN-Cache-Control', 'public, max-age=300');
-    newResponse.headers.set('Surrogate-Control', 'public, max-age=300');
-
-    // Force Cloudflare to cache this response
-    newResponse.headers.set('CF-Cache-Status', 'DYNAMIC');
-
-    // Add Cache-Tag for easier cache management in Cloudflare dashboard
-    newResponse.headers.set('Cache-Tag', 'astro-ssr');
-  }
-
-  return newResponse;
 };
+
+export const onRequest =
+  // avoid using caches when it is not available. for example, when testing locally with node
+  typeof globalThis.CacheStorage === 'function' && globalThis.caches instanceof globalThis.CacheStorage
+    ? cachingMiddleware
+    : // a middleware that does nothing
+      (_: any, next: any) => next();
