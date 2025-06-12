@@ -35,7 +35,7 @@ jobs:
           FULL_BRANCH=${GITHUB_REF#refs/heads/}
           # Replace slashes with hyphens
           ENV_NAME=$(echo "$FULL_BRANCH" | tr '/' '-' | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')
-          WORKER_NAME="${ENV_NAME}.stg"
+          WORKER_NAME="${ENV_NAME}-stg"
           echo "env_name=${ENV_NAME}" >> $GITHUB_OUTPUT
           echo "worker_name=${WORKER_NAME}" >> $GITHUB_OUTPUT
 
