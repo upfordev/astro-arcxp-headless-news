@@ -51,12 +51,16 @@ jobs:
           # Remove comments from JSONC to avoid jq parse errors
           grep -v '^\s*//' wrangler.jsonc > wrangler_clean.json
 
-          # Create route for staging environment
-          ROUTE="${WORKER_NAME}.stg.upfordev.com/*"
-          echo "Setting route: $ROUTE"
+          # Version with routes (commented out for now)
+          # # Create route for staging environment
+          # ROUTE="${WORKER_NAME}.stg.upfordev.com/*"
+          # echo "Setting route: $ROUTE"
+          # # Inject new env block with dynamic name, main entrypoint, and routes
+          # jq ". + { env: { \"$ENV_NAME\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\", \"routes\": [\"$ROUTE\"] } } }" wrangler_clean.json > wrangler.jsonc
 
-          # Inject new env block with dynamic name, main entrypoint, and routes
-          jq ". + { env: { \"$ENV_NAME\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\", \"routes\": [\"$ROUTE\"] } } }" wrangler_clean.json > wrangler.jsonc
+          # Version without routes
+          # Inject new env block with dynamic name and main entrypoint only
+          jq ". + { env: { \"$ENV_NAME\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\" } } }" wrangler_clean.json > wrangler.jsonc
 
       - name: Build project
         # Using environment variables from job level
