@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/upfordev/astro-arcxp-headless-news/compare/v1.0.0...v1.1.0) (2025-06-12)
+
+
+### Features
+
+* dummy test addition ([a651fe0](https://github.com/upfordev/astro-arcxp-headless-news/commit/a651fe0630e5173121e8261e01d415c43323b147))
+
+
+### Bug Fixes
+
+* exclude release-please branches from triggering builds ([fbaed8f](https://github.com/upfordev/astro-arcxp-headless-news/commit/fbaed8ff45afa7a66748f5a566291fccaf3c2850))
+
 ## 1.0.0 (2025-06-12)
 
 
