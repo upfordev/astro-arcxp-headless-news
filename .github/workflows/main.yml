@@ -13,9 +13,9 @@ jobs:
     environment: staging
     env:
       # Define environment variables once at the job level
-      APP_NAME: "stg"
-      ARC_ORG: "thedailybeast"
-      ARC_ENV: "sandbox"
+      APP_NAME: stg
+      ARC_ORG: thedailybeast
+      ARC_ENV: sandbox
 
       # Secrets stored in github
       ARC_DEVCENTER_TOKEN: ${{ secrets.ARC_DEVCENTER_TOKEN }}
