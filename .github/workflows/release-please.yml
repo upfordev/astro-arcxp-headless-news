@@ -98,7 +98,7 @@ jobs:
 
           # Purge cache for the specific hostname
           curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ env.CLOUDFLARE_ZONE_ID }}/purge_cache" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{\"hosts\": [\"$HOSTNAME\"]}"
 
@@ -189,7 +189,7 @@ jobs:
 
           # Purge cache for the specific hostname
           curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ env.CLOUDFLARE_ZONE_ID }}/purge_cache" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{\"hosts\": [\"$HOSTNAME\"]}"
 
