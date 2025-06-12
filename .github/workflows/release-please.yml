@@ -1,0 +1,146 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: node
+          package-name: astro-news-site
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Deploy to release environment when changes are pushed to main
+  deploy-release:
+    runs-on: ubuntu-latest
+    needs: release-please
+    timeout-minutes: 60
+    environment: staging
+    env:
+      ARC_ORG: thedailybeast
+      ARC_ENV: sandbox
+      ARC_DEVCENTER_TOKEN: ${{ secrets.ARC_DEVCENTER_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set worker name
+        id: env
+        run: |
+          WORKER_NAME="release"
+          echo "worker_name=${WORKER_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Patch wrangler.jsonc for release environment
+        run: |
+          WORKER_NAME="${{ steps.env.outputs.worker_name }}"
+          echo "Deploying to release environment: $WORKER_NAME"
+
+          # Remove comments from JSONC to avoid jq parse errors
+          grep -v '^\s*//' wrangler.jsonc > wrangler_clean.json
+
+          # Inject new env block with release name and main entrypoint
+          jq ". + { env: { \"release\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\" } } }" wrangler_clean.json > wrangler.jsonc
+
+      - name: Build project
+        run: npm run build
+
+      - name: Verify worker entrypoint exists
+        run: ls -l ./dist/_worker.js/index.js
+
+      - name: Deploy to Cloudflare Workers (Release)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env release
+          environment: release
+          secrets: |
+            ARC_ORG
+            ARC_ENV
+            ARC_DEVCENTER_TOKEN
+        env:
+          ARC_ORG: ${{ env.ARC_ORG }}
+          ARC_ENV: ${{ env.ARC_ENV }}
+          ARC_DEVCENTER_TOKEN: ${{ env.ARC_DEVCENTER_TOKEN }}
+
+  # Deploy to production only when a release is created
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    timeout-minutes: 60
+    environment: production
+    env:
+      APP_NAME: prod
+      ARC_ORG: thedailybeast
+      ARC_ENV: production
+      ARC_DEVCENTER_TOKEN: ${{ secrets.ARC_DEVCENTER_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set worker name
+        id: env
+        run: |
+          WORKER_NAME="${{ env.APP_NAME }}"
+          echo "worker_name=${WORKER_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Patch wrangler.jsonc for production environment
+        run: |
+          WORKER_NAME="${{ steps.env.outputs.worker_name }}"
+          echo "Deploying to production environment: $WORKER_NAME"
+
+          # Remove comments from JSONC to avoid jq parse errors
+          grep -v '^\s*//' wrangler.jsonc > wrangler_clean.json
+
+          # Inject new env block with production name and main entrypoint
+          jq ". + { env: { \"production\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\" } } }" wrangler_clean.json > wrangler.jsonc
+
+      - name: Build project
+        run: npm run build
+
+      - name: Verify worker entrypoint exists
+        run: ls -l ./dist/_worker.js/index.js
+
+      - name: Deploy to Cloudflare Workers (Production)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env production
+          environment: production
+          secrets: |
+            ARC_ORG
+            ARC_ENV
+            ARC_DEVCENTER_TOKEN
+        env:
+          ARC_ORG: ${{ env.ARC_ORG }}
+          ARC_ENV: ${{ env.ARC_ENV }}
+          ARC_DEVCENTER_TOKEN: ${{ env.ARC_DEVCENTER_TOKEN }}
