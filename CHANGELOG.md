@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/upfordev/astro-arcxp-headless-news/compare/v1.1.0...v1.2.0) (2025-06-12)
+
+
+### Features
+
+* hooking workers to real domain ([b3936b9](https://github.com/upfordev/astro-arcxp-headless-news/commit/b3936b9605b914880a768c53f9e4c81577c665ed))
+
 ## [1.1.0](https://github.com/upfordev/astro-arcxp-headless-news/compare/v1.0.0...v1.1.0) (2025-06-12)
 
 
