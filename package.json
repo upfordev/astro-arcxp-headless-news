@@ -1,7 +1,7 @@
 {
   "name": "astro-news-site",
   "type": "module",
-  "version": "0.0.2-0",
+  "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -20,14 +20,14 @@
   "devDependencies": {
     "wrangler": "^4.18.0",
     "@commitlint/cli": "^17.6.5",
-"@commitlint/config-conventional": "^17.6.5",
-"commitizen": "^4.3.0",
-"cz-conventional-changelog": "^3.3.0",
-"husky": "^8.0.3"
+    "@commitlint/config-conventional": "^17.6.5",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^8.0.3"
   },
   "config": {
-  "commitizen": {
-    "path": "./node_modules/cz-conventional-changelog"
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
-}
 }
