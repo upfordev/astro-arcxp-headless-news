@@ -16,8 +16,6 @@ jobs:
         id: release
         with:
           release-type: node
-          package-name: astro-news-site
-          token: ${{ secrets.GITHUB_TOKEN }}
 
   # Deploy to release environment when changes are pushed to main
   deploy-release:
