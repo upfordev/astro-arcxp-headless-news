@@ -13,11 +13,11 @@
     "enabled": true
   },
 
-  "env": {
-    "preview": {
-      "name": "workflow-test-app-preview"
-    }
-  }
+  // "env": {
+  //   "preview": {
+  //     "name": "workflow-test-app-preview"
+  //   }
+  // }
 
   // Cache configuration is managed through headers in the middleware
 
