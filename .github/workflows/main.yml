@@ -11,11 +11,10 @@ jobs:
     timeout-minutes: 60
     env:
       # Define environment variables once at the job level
+      # Secrets stored in github
       ARC_ORG: ${{ secrets.ARC_ORG }}
       ARC_ENV: ${{ secrets.ARC_ENV }}
       ARC_DEVCENTER_TOKEN: ${{ secrets.ARC_DEVCENTER_TOKEN }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
     steps:
       - name: Checkout code
@@ -52,17 +51,6 @@ jobs:
           # Inject new env block with dynamic name and main entrypoint
           jq ". + { env: { \"$ENV_NAME\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\" } } }" wrangler_clean.json > wrangler.jsonc
 
-      # - name: Add Wrangler secrets
-      #   # Using environment variables from job level
-      #   run: |
-      #     ENV_NAME="${{ steps.env.outputs.env_name }}"
-
-      #     echo "Setting secrets for environment: $ENV_NAME"
-
-      #     echo "$ARC_ORG" | npx wrangler secret put ARC_ORG --env "$ENV_NAME"
-      #     echo "$ARC_ENV" | npx wrangler secret put ARC_ENV --env "$ENV_NAME"
-      #     echo "$ARC_DEVCENTER_TOKEN" | npx wrangler secret put ARC_DEVCENTER_TOKEN --env "$ENV_NAME"
-
       - name: Build project
         # Using environment variables from job level
         run: npm run build
@@ -70,11 +58,12 @@ jobs:
       - name: Verify worker entrypoint exists
         run: ls -l ./dist/_worker.js/index.js
 
+      # https://github.com/marketplace/actions/deploy-to-cloudflare-workers-with-wrangler
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --env ${{ steps.env.outputs.env_name }}
           environment: ${{ steps.env.outputs.env_name }}
           secrets: |
