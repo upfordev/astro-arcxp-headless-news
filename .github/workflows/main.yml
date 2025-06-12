@@ -52,16 +52,16 @@ jobs:
           # Inject new env block with dynamic name and main entrypoint
           jq ". + { env: { \"$ENV_NAME\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\" } } }" wrangler_clean.json > wrangler.jsonc
 
-      - name: Add Wrangler secrets
-        # Using environment variables from job level
-        run: |
-          ENV_NAME="${{ steps.env.outputs.env_name }}"
+      # - name: Add Wrangler secrets
+      #   # Using environment variables from job level
+      #   run: |
+      #     ENV_NAME="${{ steps.env.outputs.env_name }}"
 
-          echo "Setting secrets for environment: $ENV_NAME"
+      #     echo "Setting secrets for environment: $ENV_NAME"
 
-          echo "$ARC_ORG" | npx wrangler secret put ARC_ORG --env "$ENV_NAME"
-          echo "$ARC_ENV" | npx wrangler secret put ARC_ENV --env "$ENV_NAME"
-          echo "$ARC_DEVCENTER_TOKEN" | npx wrangler secret put ARC_DEVCENTER_TOKEN --env "$ENV_NAME"
+      #     echo "$ARC_ORG" | npx wrangler secret put ARC_ORG --env "$ENV_NAME"
+      #     echo "$ARC_ENV" | npx wrangler secret put ARC_ENV --env "$ENV_NAME"
+      #     echo "$ARC_DEVCENTER_TOKEN" | npx wrangler secret put ARC_DEVCENTER_TOKEN --env "$ENV_NAME"
 
       - name: Build project
         # Using environment variables from job level
@@ -76,3 +76,12 @@ jobs:
           apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --env ${{ steps.env.outputs.env_name }}
+          environment: ${{ steps.env.outputs.env_name }}
+          secrets: |
+            ARC_ORG
+            ARC_ENV
+            ARC_DEVCENTER_TOKEN
+        env:
+          ARC_ORG: ${{ env.ARC_ORG }}
+          ARC_ENV: ${{ env.ARC_ENV }}
+          ARC_DEVCENTER_TOKEN: ${{ env.ARC_DEVCENTER_TOKEN }}
