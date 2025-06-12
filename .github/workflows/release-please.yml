@@ -54,8 +54,12 @@ jobs:
           # Remove comments from JSONC to avoid jq parse errors
           grep -v '^\s*//' wrangler.jsonc > wrangler_clean.json
 
-          # Inject new env block with release name and main entrypoint
-          jq ". + { env: { \"release\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\" } } }" wrangler_clean.json > wrangler.jsonc
+          # Set route for release environment
+          ROUTE="release.upfordev.com/*"
+          echo "Setting route: $ROUTE"
+
+          # Inject new env block with release name, main entrypoint, and routes
+          jq ". + { env: { \"release\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\", \"routes\": [\"$ROUTE\"] } } }" wrangler_clean.json > wrangler.jsonc
 
       - name: Build project
         run: npm run build
@@ -119,8 +123,12 @@ jobs:
           # Remove comments from JSONC to avoid jq parse errors
           grep -v '^\s*//' wrangler.jsonc > wrangler_clean.json
 
-          # Inject new env block with production name and main entrypoint
-          jq ". + { env: { \"production\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\" } } }" wrangler_clean.json > wrangler.jsonc
+          # Set route for production environment
+          ROUTE="www.upfordev.com/*"
+          echo "Setting route: $ROUTE"
+
+          # Inject new env block with production name, main entrypoint, and routes
+          jq ". + { env: { \"production\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\", \"routes\": [\"$ROUTE\"] } } }" wrangler_clean.json > wrangler.jsonc
 
       - name: Build project
         run: npm run build

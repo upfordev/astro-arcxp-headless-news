@@ -14,7 +14,6 @@ jobs:
     environment: staging
     env:
       # Define environment variables once at the job level
-      APP_NAME: stg
       ARC_ORG: thedailybeast
       ARC_ENV: sandbox
 
@@ -39,7 +38,7 @@ jobs:
           FULL_BRANCH=${GITHUB_REF#refs/heads/}
           # Replace slashes with hyphens
           ENV_NAME=$(echo "$FULL_BRANCH" | tr '/' '-' | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')
-          WORKER_NAME="${ENV_NAME}-${{ env.APP_NAME }}"
+          WORKER_NAME="${ENV_NAME}"
           echo "env_name=${ENV_NAME}" >> $GITHUB_OUTPUT
           echo "worker_name=${WORKER_NAME}" >> $GITHUB_OUTPUT
 
@@ -52,8 +51,12 @@ jobs:
           # Remove comments from JSONC to avoid jq parse errors
           grep -v '^\s*//' wrangler.jsonc > wrangler_clean.json
 
-          # Inject new env block with dynamic name and main entrypoint
-          jq ". + { env: { \"$ENV_NAME\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\" } } }" wrangler_clean.json > wrangler.jsonc
+          # Create route for staging environment
+          ROUTE="${WORKER_NAME}.stg.upfordev.com/*"
+          echo "Setting route: $ROUTE"
+
+          # Inject new env block with dynamic name, main entrypoint, and routes
+          jq ". + { env: { \"$ENV_NAME\": { \"name\": \"$WORKER_NAME\", \"main\": \"./dist/_worker.js/index.js\", \"routes\": [\"$ROUTE\"] } } }" wrangler_clean.json > wrangler.jsonc
 
       - name: Build project
         # Using environment variables from job level
