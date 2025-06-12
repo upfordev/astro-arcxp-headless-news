@@ -1,7 +1,5 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": "./dist/_worker.js/index.js",
-  // Update to today's date
   "compatibility_date": "2025-05-31",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
@@ -10,8 +8,7 @@
   },
   "observability": {
     "enabled": true
-  },
-
+  }
   // This connects the domain with the worker
   // "routes": [
   //   "www.upfordev.com/*"
