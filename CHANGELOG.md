@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/upfordev/astro-arcxp-headless-news/compare/v1.3.0...v1.4.0) (2025-06-13)
+
+
+### Features
+
+* h1 in green ([#10](https://github.com/upfordev/astro-arcxp-headless-news/issues/10)) ([fa8a101](https://github.com/upfordev/astro-arcxp-headless-news/commit/fa8a10162928f8baeb051c9b618bbbacc17c28ae))
+
 ## [1.3.0](https://github.com/upfordev/astro-arcxp-headless-news/compare/v1.2.0...v1.3.0) (2025-06-12)
 
 
